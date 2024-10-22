@@ -17,7 +17,11 @@ function editVeterinarian($vetID, $vetName) {
 }
 
 function deleteVeterinarian($vet_id) {
-    global $pdo; // Use the global $pdo instance
+    global $pdo;
+
+    $stmt = $pdo->prepare("DELETE FROM Appointments WHERE VetID = :vet_id");
+    $stmt->execute(['vet_id' => $vet_id]);
+
     $stmt = $pdo->prepare("DELETE FROM Veterinarians WHERE VetID = :vet_id");
     $stmt->execute(['vet_id' => $vet_id]);
 }
@@ -58,6 +62,14 @@ function deleteAppointment($appointmentID) {
     global $pdo;
     $sql = "DELETE FROM Appointments WHERE AppointmentID = :appointment_id";
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute(['appointment_id' => $appointmentID]);
+    $result = $stmt->execute(['appointment_id' => $appointmentID]);
+    
+    if ($result) {
+        echo "Appointment with ID $appointmentID deleted successfully.";
+    } else {
+        var_dump($stmt->errorInfo());
+    }
+    return $result;
 }
+
 ?>
